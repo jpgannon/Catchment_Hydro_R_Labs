@@ -1,0 +1,32 @@
+---
+title: "Lab2"
+output:
+  pdf_document: default
+  html_document: default
+---
+## Your Name
+## Directions
+
+
+You will build your lab turn-in using this R-markdown file and then submit it as a pdf on blackboard.
+
+For each question at the end of the Chapter 1 reading, you should have a code chunk and a description of what you did and your final answer in a text box (like this one) below. There is one example below. Remember you can always look back at the example RMD file in the Catchment Hydrology root directory if you forget how to do something. Google is also your friend!
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Question 0: 
+To get the answer to question 0, I created a variable called x with a value of 7 and then multiplied it by 3. The final answer is 21.
+
+```{r Q0}
+x <- 7
+x <- x * 3
+x
+```
+
+This is my question 1 bla bla
+
+```{r}
+7*9
+```
+
+

@@ -1,0 +1,57 @@
+---
+title: "Lab 5"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("ggplot2")
+```
+
+## Name: 
+
+ The purpose of this lab is to give you practice creating and manipulating different types of data and to introduce you to several types of plots you can create to analyze different types of data.
+ 
+ Instructions: for each question and code chunk below either create your own data or use data from a project of yours or a previous assignment in this class.  These data can be nonsense and/or funny, the point is to give you practice.  Use your ggplot2 cheat sheet to help you create these plots.
+
+<h4>1.  Visualizing frequency.  Create a single variable with at least 30 measurements.  We want to look at the distribution this variable.  For instance, if these were grades on the test, looking at the frequency would tell us how many people got A's B's C's etc.
+
+ Create the following plots to examine the distribution of your data:  histogram, dotplot, density, quantile quantile.
+ 
+ Which of these is the most useful for examining your data? Explain why.</h4> 
+  ...your answer...
+
+```{r}
+##2
+#data
+
+#histogram
+
+#dotplot
+
+#density
+
+#quantile quantile
+```
+<h4>2.   Comparing groups:  create two columns of data. One should be a variable and the other the group that each variable belongs to.  For example, hink about a biology experiment where you have a measurement of a control group and a treatment group. You would have a column with your measurements and then another column that indicates which group the measurement is from.  Create at least three groups with at least 10 measurements per group.
+
+ Create the following plots to show the differences between your groups:  box plot, dotplot, violin plot, bar plot. Explain the information shown in each of the plots and discuss its advantages and drawbacks.</h4>
+ ...your answer...
+```{r}
+##2
+#box plot 
+
+#dotplot
+
+#violin plot 
+
+#bar plot
+```
+<h4>3.   Comparing two variables:  create two columns of data that are related to one another.  An example would be the temperature of the stovetop and then the position of the dial.  Create at least 25 paired measurements. 
+
+ Pick three of the plot types in the two variables section of your cheat sheet  and  use them to plot your data.  Explain what each of the plots shows.</h4> 
+  ...your answer...
+```{r cars}
+##3
+```
+

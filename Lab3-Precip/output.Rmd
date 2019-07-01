@@ -1,0 +1,72 @@
+---
+title: "Lab 3: Precip"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Name: 
+
+The purpose of this lab is two-fold. First it will acquant you with some of the ways we look at precipitation. Second, it will get you to practice some of the R concepts we went over in lab. 
+
+As always, describe what you did in your code in the text portion of this RMD file, have the code in the code blocks (in the grey, between ''' lines), and turn in a PDF of the knit document titled "LastName_Lab3.pdf"
+
+1. The following is a list of precipitation amounts from a week in western North Carolina. Create a vector containing these data and answer the following questions. Do this using code, even though you could answer several by just looking at the data.
+a. What was the total amount of precipitation?
+b. What was the largest amount of precipitation on any day?
+c. What was the smallest amount of precipitation on any day?
+d. How many days in the week had 0 mm of precip?
+e. What was the average amount of precipitation per day?
+
+Precip (mm): 0, 2, 4.5, 0, 1, 7.2, 0
+```{r}
+#Code goes here
+
+```
+2. Read in the file called "precip areas" and use the data within to calculate the total precipitation using the Thiessen Polygon method. The "percent area" column in the data is the percentage of catchment coverage for the corresponding precipitation measurement. 
+```{r}
+#Code goes here
+
+```
+3. Calculating intensity: What was the highest rainfall intensity observed in the data record presented in "precip for intensity.csv"? Use code to both calculate the intensity AND to locate the highest intensity.
+
+Note: The original data here just had time and precip amount, which is standard. I calculated the differences between times for you, because that can be tricky to do in R, and we haven't discussed how to deal with dates. Below is the code I used to calculate the differences between times. Time differences are in minutes. Precip is in mm. 
+
+```{r eval=FALSE}
+#THIS CODE DOES NOT RUN
+#read data
+p <- read.csv("original precip file")
+
+#tell R how to read the time column
+p$UTC <- strptime(p$UTC, "%m/%d/%y %H:%M")
+
+#convert to a time format you can do math with
+p$UTC <- as.POSIXct(p$UTC)
+
+#create two equal length time datasets where one is lagged by 1
+lag1 <- p$UTC[-1]
+nolag <- p$UTC[-length(p$UTC)]
+
+#subtract the lagged times from the times to get the differences between each
+timediff <- nolag - lag1
+
+#remove the last row in the data so it is the same length as timediff
+p <- p[-length(p$UTC),]
+
+#add the timediff vector to the data
+p <- cbind(p, timediff)
+
+#convert the timediff column to numbers (originally it was xx minutes)
+p$timediff <- as.numeric(p$timediff)
+
+#output new data file
+write.csv(p, "outputfile...")
+```
+Your code:
+```{r}
+#code goes here
+```
+
+

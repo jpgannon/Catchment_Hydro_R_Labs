@@ -1,0 +1,121 @@
+---
+title: "Lab 9"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## IF and FOR loops
+
+if STATEMENTS
+
+Use when you want to do something when a condition is true, but not otherwise.
+
+Syntax in R
+
+```{r if}
+test <- c(1,2,3,4,5,6,7,8,9,10)
+testSHORT <- c(1,2,3,4)
+
+L <- length(test)
+Lshort <- length(testSHORT)
+
+if(L > 8){
+  summary(test)
+}
+
+if(Lshort < 8){
+  print("The vector is not long enough")
+}
+
+
+```
+
+## for loops
+
+A loop runs the same chunk of code over and over again until 
+a condition you specify is met and it runs
+
+When you mess up and it just runs forever this is called 
+an "infinite loop"
+
+Look up apple's address in google maps.
+
+```{r for}
+nums <- c(10,20,67,100)
+
+for(x in 1:length(nums)){
+  print(nums[x] * 15)
+}
+
+```
+for ex 2
+```{r for2}
+text <- c("the worst","the best","my favorite","all of these")
+
+for(x in 1:length(text)){
+  print(paste("R is",text[x]))
+}
+
+```
+for ex 3, hard code in numbers
+```{r for3}
+text <- c("the worst","the best","my favorite","all of these")
+
+for(x in 1:4){
+  print(paste("R is",text[x]))
+}
+
+```
+
+for ex 4, sequence of numbers not by 1
+```{r for4}
+text <- c("the worst","the best","my favorite","all of these")
+
+for(x in seq(from = 1, to = length(text), by = 2)){
+  print(paste("R is",text[x]))
+}
+
+```
+
+for ex 5, sequence of numbers hard coded
+```{r for5}
+text <- c("the worst","the best","my favorite","all of these")
+
+for(x in c(1,4)){
+  print(paste("R is",text[x]))
+}
+
+```
+
+A note on programming in general:
+For loops can be kind of cumbersome and are not efficient
+in R, a lot of times for looks can be avoided because of the way
+it deals with vectors. The first for loop example here could be
+written as just num*15
+
+Whenever you use a for loop, you should ask yourself if there is
+another way you could execute that same code.
+
+## LAB 9
+
+Create a list of 3 USGS gage numbers (as text) just like the "text" line in the chunk of code above.
+
+Use a for loop to read in daily data for each of the gages for 2018, and attach it to the one before it. You will need to use an if statement as well.
+
+Using your new dataset of 3 usgs gages, make a plot that shows all 3 on one plot, in different colots. Use ggplot.
+
+Reminder: you will have to load the ggplot and usgs data retrieval packages
+
+We will write psuedo code for how to do this on the board.
+
+#### For your submission
+Format your code into a knit RMD that explains what you did and why. Below your code and plot, answer the following question.
+
+##### Question
+Look up the map and watershed informatino for the USGS gages you selected. Drawing on everything we've talked about in class so far, use the information you got from looking at the gage info and map to describe the differences you see between the three gages in your plot.
+

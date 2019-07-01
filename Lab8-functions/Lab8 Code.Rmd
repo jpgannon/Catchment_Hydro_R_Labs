@@ -1,0 +1,65 @@
+---
+title: "Flood Analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(dataRetrieval)
+```
+
+## Making a function
+Let's create a funciton to calculate baseflow and stormflow. We will give the function Stream Discharge, and then the conductivity of discharge, flow before the storm, and rain.
+
+The function will use the following equations to calculate baseflow and stormflow
+1) Qn = Qt((Ct-Co) / (Cn - Co))
+2) Qt = Qo + Qn
+
+It will return the values of baseflow and stormflow
+
+```{r function example}
+
+EMMA <- function(Qtot = 0, #Stormflow
+                 Cstorm = 0, #Conductivity of stormflow
+                 Cbf = 0, #Conductivity of baseflow
+                 Cprecip = 0) #Conductivity of precip
+                { 
+  
+  #Qn = Qt((Ct-Co) / (Cn - Co))
+  Qnew <- Qtot * ((Cstorm - Cbf) / (Cprecip - Cbf))
+  
+  #Qo = Qt - Qn
+  Qold <- Qtot - Qnew
+  
+  #create output
+  out <- c(Qtot, Qnew, Qold)
+  names(out) <- c("Total Q", "New Q","Old Q")
+  out <- as.data.frame(out)
+  
+  #print output, note: if you put a plot in here, it will plot when you run the function
+  out
+}
+
+#now give our EMMA function some example values so it can calculate and return the Q values
+
+EMMA(Qtot = 100, Cstorm = 60, Cbf = 90, Cprecip = 10)
+```
+
+## Write a function 
+
+Write a function that creates a plot of Discharge vs. Flood return interval and of discharge vs Probability of exceedence for any USGS gage number passed to it. These plots should be two panels of one plot.
+
+For example:
+if you type> myfloodfunction("03513000")
+What should result are the two plots above for the Tuckasegee river in Bryson city.
+
+For the lab, pick another USGS gage somewhere else to show your function works.
+
+
+```{r}
+##Your code
+```
+
+For the river you chose, what is the magnitude of the 1 in 100 chance flood? Explain how you got your answer.
+

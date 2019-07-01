@@ -1,0 +1,247 @@
+---
+title: "Baseflow Separation"
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(gridExtra)
+library(kableExtra)
+```
+##Name: Erasmus B. Draggin
+
+*Before turning in: Delete all directions*
+*Leave all code, comments, questions, answers, and plots*
+
+###PART1: End-member mixing model
+####The two end-member mixing model assumes that streamflow at any time is the summation of new water and old water such that:
+
+   Qt = Qo + Qn (Eq. 1) 
+
+####where Qt is stream discharge, Qo is discharge from old water, and Qn is discharge from new water.  If we investigate specific conductance, which is a conservative tracer, we can assume the conservation of mass holds. This means we can assume that the mass flow rate of that tracer in the stream at any time is the summation of the mass flow rate of old and new water, such that:
+
+  QtCt = QoCo + QnCn  (Eq. 2)
+
+####where Q is discharge, C is concentration, and t, o, and n refer to stream, old, and new water respectively.
+
+####If we solve Eq. 2 for Qn, and substitute Eq. 1 for Qo, we get:
+
+  Qn = Qt((Ct-Co) / (Cn - Co)) (Eq. 3)
+  
+####We will use this equation to calculate the percentage and volume of new and old flow of three storms. The first two are in the Duke Experimental Research Forest, a Piedmont, low slope, headwater forest outside of Raleigh, NC. One storm was in fall 2015, and had dry antecedent moisture conditions, and the second was in winter 2015 and had wet antecedent moisture conditions. The third storm is in a suburban Philadelphia headwater stream, the Wissahickon Creek, from June 2017 and had wet antecedent moisture conditions.
+
+###First, hypothesize expected differences:
+
+#####1)	 What difference do you think antecedent moisture conditions will have on the proportion of storm flow that comes from old vs. new water? (no wrong answers here!)
+
+*Your answer replaces this text.*
+
+#####2)	What difference do you think the surrounding landscape will have on the proportion of stormflow that comes from old vs. new water? (no wrong answers here!)
+
+*Your answer replaces this text.*
+
+```{r bring in and look at data, fig.asp = 1}
+#1a)	Read Forest Fall, Forest Winter, and Suburban event data into R. 
+#Be sure to name them something meaningful. 
+
+forest <- read.csv("ForestFall.csv")
+
+#lb) Convert the DateTime Column in each dataframe to a POSIX object
+
+forest$DateTime <- as.POSIXct(forest$DateTime, format = "%m/%d/%y %H:%M")
+
+# 2) Create a 2 panel plot for each stream with the discharge in the top panel 
+# and conductivity in the bottom
+
+FQ <- ggplot(data = forest, aes(x = DateTime, y = Qls))+
+  geom_line()+
+  labs(x = '',y = "Q (L/s)")+
+  theme_classic()
+
+FC <- ggplot(data = forest, aes(x = DateTime, y = Cond))+
+  geom_line()+
+  labs(x = '',y = "Cond (msem/cm")+
+  theme_classic()
+
+grid.arrange(FQ, FC, nrow = 2)
+
+```
+
+```{r analysis, fig.asp = 1}
+# 3)	Use stream discharge (Qt), stream specific conductivity (Ct), groundwater 
+# specific conductance (Co), and precipitation specific conductance (Cn) 
+# to calculate the discharge of new water (Qn) at each time step for each 
+# of the three storms in the columns given in the data files (Eq. 3) (add a column).
+
+forest$Qn <-  forest$Qls*((forest$Cond-forest$GWCond[1]) / 
+                            (forest$PrecipCond[1] - forest$GWCond[1]))
+
+# 4)	Use Eq. 1 to calculate Qo for each time step (add a column).
+
+forest$Qo <- forest$Qls - forest$Qn
+
+# 5)	Add the old and new water discharge time series to the hydrographs you 
+# created in step 2.  Make them different colors.
+
+emmaFF <-ggplot(data = forest, aes(x = DateTime, y = Qls, color = "Total"))+
+  geom_line()+
+   labs(x = '',y = "Q (L/s)", color = "Discharge")+
+  theme_classic()+
+  geom_line(data = forest, aes(x = DateTime, y = Qo, color = "Old"))+
+  geom_line(data = forest, aes(x = DateTime, y = Qn, color = "New"))+
+  theme(legend.position = c(.7,.7))
+
+grid.arrange(emmaFF, FC, nrow = 2) 
+  
+```
+```{R summarize}
+# 6)	Calculate the volumes of old and new water by determining the area under their 
+# respective hydrographs.  To do this, you are just breaking the area under the curve 
+# up into rectangles, calculating the area of each rectangle, and adding them all 
+# together.  You have the y-axis length of the rectangle already- it is the discharge 
+# in L/s.  You just need to multiply it by the x-axis width (CAREFUL OF UNITS- make 
+# sure they cancel properly).  Do this for each time step and add them up, and you have
+# the total area under the curve, which, mathematically, should come out in volume (L).  
+# These will be large numbers, so change them to m3.
+
+#5 minutes in seconds
+xwidth <- 5 * 60
+
+#liters in cubic meters
+L2m3 <- 1000
+
+#multiply heights by widths then sum
+forestTN <- sum(forest$Qn * xwidth) #total new
+forestTO <- sum(forest$Qo * xwidth) #total old
+forestT <- sum(forest$Qls * xwidth) #total
+
+#convert to m^3
+forestTN <- forestTN/L2m3
+forestTO <- forestTO/L2m3
+forestT <- forestT/L2m3
+
+#format into a table using markdown language below
+```
+|	                  | New Q (m^3)   | Old Q  (m^3) | Total Discharge (m^3)
+|------------------ | --------------| ------------ | ---------------
+|Forest fall 2015   | `r forestTN`  | `r forestTO` | `r forestT`
+|Forest winter 2015	| 	            |              |
+|Suburban June 2017	|               |              |
+
+#####Discussion Question: Type a paragraph about your observations of differences caused by different antecedent moisture conditions and land use in the watershed, both using the tables and the graphs. Were your original hypotheses correct? What were the volumes and sources of water to these streams during these storms?
+
+
+###PART 2: In this part, you will separate a storm hydrograph into baseflow and eventflow using graphical methods. Baseflow is the flow that would otherwise be present, even if the event had not occurred.  Eventflow is the volume of water that is added to the stream during the precipitation event. 
+
+####Eventflow can be separated from baseflow by many different graphical approaches.  In this assignment, use a linear slope approach, which can be implemented by drawing a line across the hydrograph connecting the pre- and post-storm baseflow values.
+	
+####1)	For consistency, you will use the following times to calculate the slope of the baseflow separation line throughout the rest of this assignment.  Think about how similar or dissimilar these values are from what you would have chosen.
+
+|	                  | Rising Limb Begins	| Falling Limb Enters Baseflow
+|------------------ | ------------------- | ---------
+|Forest fall 2015   | 10/2/15 10:55       | 10/3/15 13:55
+|Forest winter 2015	| 3/5/15 8:50	        | 3/6/15 18:35
+|Suburban June 2017	| 6/6/17 4:15	        | 6/6/17 18:15
+
+####Use the discharge where the rising limb begins, the discharge where the falling limb enters baseflow, and the time elapsed (BE CAREFUL OF UNITS) to calculate the overall slope of the baseflow separation line.  Remember, a slope is calculated as rise divided by run, or change in y/ change in x. Report the slope in units of L s-2.
+
+```{r graphical sep, fig.asp = 1}
+#We need to get a little crafty to do this.
+#First Create a column that is seconds elapsed from the start of the record
+
+forest$sec <- seq(from = 0,by = 5*60, length.out = length(forest$Qls))
+
+#now find which second value corresponds to the start and end time
+
+startT <- as.POSIXct("10/2/15 10:55", format = "%m/%d/%y %H:%M")
+endT <- as.POSIXct("10/3/15 13:55", format = "%m/%d/%y %H:%M")
+
+startSec <- forest$sec[forest$DateTime == startT]
+endSec <- forest$sec[forest$DateTime == endT]
+
+#find the flow at the start time and end time
+startQ <- forest$Qls[forest$DateTime == startT]
+endQ <- forest$Qls[forest$DateTime == endT]
+
+#use the times in seconds and the discharges to calculate slope (rise over run)
+slope <- (endQ-startQ) / (endSec-startSec)
+
+#create graphical baseflow column (GBF). Set it equal to the overall flow
+#we do this because before and after the storm, we are considering 
+#all flow to be baseflow. So before and after the storm Qls = Baseflow
+forest$GBF <- forest$Qls
+
+#use Q at the start of event + (slope * elapsed time since the start event)
+forest$GBF[forest$DateTime > startT & forest$DateTime < endT] <- 
+  startQ + 
+  (slope * (forest$sec[forest$DateTime > startT & forest$DateTime < endT]-startSec))
+
+#plot showing baseflow and total flow
+graphicFF <- ggplot(data = forest, aes(x = DateTime, y = Qls, color = "Total"))+
+  geom_line()+
+   labs(x = '',y = "Q (L/s)", color = "Discharge")+
+  theme_classic()+
+  geom_line(data = forest, aes(x = DateTime, y = GBF, color = "Old"))+
+  theme(legend.position = c(.7,.7))
+
+grid.arrange(graphicFF, FC, nrow = 2) 
+```
+
+####1)	Calculate the eventflow (Qe) by subtracting baseflow from total stream discharge during the storm.  Plot the event flow on the hydrograph.
+
+```{r calculate event flow, fig.asp = 1}
+#create graphical event flow GEF by subtracting graphical baseflow from Qls
+forest$GEF <- forest$Qls - forest$GBF
+
+#set zero values in event flow to NA so they don't plot
+is.na(forest$GEF[forest$GEF == 0]) <- TRUE
+
+#plot showing baseflow, new water or event flow, and total flow
+graphicFFall <- ggplot(data = forest, aes(x = DateTime, y = Qls, color = "Total"))+
+  geom_line()+
+   labs(x = '',y = "Q (L/s)", color = "Discharge")+
+  theme_classic()+
+  geom_line(data = forest, aes(x = DateTime, y = GBF, color = "Old"))+
+  geom_line(data = forest, aes(x = DateTime, y = GEF, color = "New"))+
+  theme(legend.position = c(.7,.7))
+
+grid.arrange(graphicFFall, FC, nrow = 2) 
+
+```
+
+####2)	Following the steps from part 1, calculate the area under the baseflow and eventflow curves to calculate the total volume of eventflow and baseflow during each storm (so, only from the rising limb starting to the falling limb ending). Create a table that shows your results from the three watersheds.
+
+```{r}
+#5 minutes in seconds
+xwidth <- 5 * 60
+
+#liters in cubic meters
+L2m3 <- 1000
+
+#multiply heights by widths then sum
+forestTot <- sum(forest$Qls * xwidth)
+forestOld <- sum(forest$GBF * xwidth)
+forestNew <- sum(forest$GEF * xwidth, na.rm = TRUE)
+
+#convert to m^3
+forestTot <- forestTot/L2m3
+forestOld <- forestOld/L2m3
+forestNew <- forestNew/L2m3
+
+#format into a table using markdown language below
+```
+
+|	                  | New Q (m^3)     | Old Q  (m^3) | Total Discharge (m^3)
+|------------------ | ----------------| ------------ | ---------------
+|Forest fall 2015   | `r forestNew`   | `r forestOld`| `r forestTot`
+|Forest winter 2015	| 	              |              |
+|Suburban June 2017	|                 |              |
+
+#####Discussion Question. Type a paragraph comparing the two methods.  Do they show similar responses? Are new water and eventflow equivalent? Why or why not?  What are drawbacks to this method?
+
+*Your answer replaces this text.*
+

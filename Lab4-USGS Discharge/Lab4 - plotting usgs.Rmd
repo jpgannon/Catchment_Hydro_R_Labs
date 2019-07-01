@@ -1,0 +1,91 @@
+---
+title: "Catchment Hydro Lab4"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Name:
+
+The intro to this lab will be given verbally at the beginning of lab. Please describe how you accomplished each of the tasks below, as well as including your code and plots. 
+
+Tips:
+1. Use complete sentences. 
+2. Make sure your answers are clear.
+3. Units!
+4. Be sure plots have appropiate axis labels.
+
+
+<h3>Questions:</h3>
+<h4>1. Read the tuck discharge file and plot it one with a linear y axis and once with a log y axis. The code below does this for you.</h4>
+...your answer...
+```{r Q1 Tuck}
+#read csv file
+tuck <- read.csv("tuck discharge.csv")
+
+#tell R how to read the dates 
+#look at the date format by clicking the data in rstudio or
+#enter >tuck$datetime[1]
+tuck$date <- strptime(tuck$datetime, format = "%m/%d/%y")
+tuck$date <- as.POSIXct(tuck$date)
+
+#plot Q v. time
+#type makes the plot a line instead of points
+#xlab and ylab are the x and y axes
+plot(tuck$date, tuck$Q.cfs, type = 'l', ylab = "Discharge (cfs)", xlab = "Date")
+
+#log y axis to see low flow variations better
+#log tells r wwhat axis to log
+plot(tuck$date, tuck$Q.cfs, type = 'l',ylab = "Discharge (cfs)", xlab = "Date", log = 'y')
+```
+<h4>2. Go to waterdata.usgs.gov and download daily mean discharge data for a river of your choice. Plot it with a linear y axis as above.</h4>
+...your answer...
+```{r Q2 River of your choice}
+#code here
+```
+
+<h4>3. Plot the data from #1 using ggplot2. Example code is below.</h4>
+<h4>What is different about ggplot2's approach to ploting?</h4>
+...your answer...
+<h4>Can you see any advantages to this method?</h4>
+...your answer...
+```{r}
+#to use a new library you must install and load it. 
+#I have already installed it, and this line loads it
+library(ggplot2)
+
+#save plot as tuckplot. this makes it easier to bring the plot up later
+#or include in a multi-panel plot
+#the following plot line is constructed as such:
+    #ggplot() is called to set up the plot space, you tell it the data you will us and then the "aesthetic", which is what the x and y axis will be. This just sets up the plot area. Run that line by itself to see (minus the tuckplot <- part). You then add a + to tell ggplot more instructions are coming
+    #geomline() tells ggplot to plot the data as a line
+    #labs() tells it the axis labels
+    #theme_classic() makes a clean plot.. take this line out to see the ggplot default, which includes some unnecessary chart junk
+tuckplot <- ggplot(data = tuck, aes(x = date, y = Q.cfs))+
+    geom_line()+
+    labs(x = "Date", y = "Q (cfs)")+
+    theme_classic()
+
+#bring up the plot
+tuckplot
+```
+
+<h4>4. Plot the data you downloaded using ggplot2.</h4>
+...your answer...
+```{r}
+
+```
+<h4>5. What was the mean, maximum, minimum, and standard deviation of discharge from the Tuck data AND from the data you downloaded</h4>
+...your answer...
+```{r}
+
+```
+<h4>6. Use the USGS data retrieval package to download and plot another year of data from another river in the US. Use plot() or ggplot(). Use the help file for the function readNWISdv() to figure out how to get these data. The parameter code for discharge in CFS is "00060". Note: all codes must be in quotes, not passed as integers.</h4>
+...your answer...
+```{r}
+library(dataRetrieval)
+
+```
+
